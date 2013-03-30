@@ -41,23 +41,30 @@ static int magic_inited = 0;
 void
 magic_init()
 {
+    struct stat statbuf;
+    long seed;
+    struct timeval t;
+
     if (magic_inited)
         return;
 
+    magic_inited = 1;
+
     /*
         try using /dev/urandom
+        also check that it's a character device
         If it doesn't exist, fallback to other method
     */
-    rfd = open("/dev/urandom", O_RDONLY);
-    if(rfd == -1) {
-        long seed;
-        struct timeval t;
 
-        gettimeofday(&t, NULL);
-        seed = gethostid() ^ t.tv_sec ^ t.tv_usec ^ getpid();
-        srandom(seed);
+    if (!lstat("/dev/urandom", &statbuf) && S_ISCHR(statbuf.st_mode)) {
+        rfd = open("/dev/urandom", O_RDONLY);
+        if (rfd >= 0)
+            return;
     }
-    magic_inited = 1;
+
+    gettimeofday(&t, NULL);
+    seed = gethostid() ^ t.tv_sec ^ t.tv_usec ^ getpid();
+    srandom(seed);
 }
 
 /*
