@@ -28,9 +28,6 @@
 
 #include "magic.h"
 
-extern long mrand48(void);
-extern void srand48(long);
-
 static int rfd = -1;	/* fd for /dev/urandom */
 static int magic_inited = 0;
 
@@ -58,7 +55,7 @@ magic_init()
 
         gettimeofday(&t, NULL);
         seed = gethostid() ^ t.tv_sec ^ t.tv_usec ^ getpid();
-        srand48(seed);
+        srandom(seed);
     }
     magic_inited = 1;
 }
@@ -76,36 +73,10 @@ magic()
 
         if (read(rfd, &ret, sizeof(ret)) < sizeof(ret)) {
             /* on read() error fallback to other method */
-            return (u_int32_t) mrand48();
+            return (u_int32_t)random();
         }
         return ret;
     }
-    return (u_int32_t) mrand48();
+    return (u_int32_t)random();
 }
 
-#ifdef NO_DRAND48
-/*
- * Substitute procedures for those systems which don't have
- * drand48 et al.
- */
-
-double
-drand48()
-{
-    return (double)random() / (double)0x7fffffffL; /* 2**31-1 */
-}
-
-long
-mrand48()
-{
-    return random();
-}
-
-void
-srand48(seedval)
-long seedval;
-{
-    srandom((int)seedval);
-}
-
-#endif
