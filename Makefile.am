@@ -40,8 +40,6 @@ libtac/include/libtac.h \
 libtac/include/cdefs.h
 
 pam_tacplus_la_CFLAGS = $(AM_CFLAGS) -Ilibtac/include
-
-## note: on Mac OS X should have: -framework CommonCrypto (?)
 pam_tacplus_la_LDFLAGS = -module -avoid-version -lssl
 
 
