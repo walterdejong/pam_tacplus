@@ -28,7 +28,6 @@ libtac/lib/hdr_check.c \
 libtac/lib/header.c \
 libtac/lib/magic.c \
 libtac/lib/magic.h \
-libtac/lib/md5.c \
 libtac/lib/md5.h \
 libtac/lib/messages.c \
 libtac/lib/messages.h \
@@ -41,7 +40,10 @@ libtac/include/libtac.h \
 libtac/include/cdefs.h
 
 pam_tacplus_la_CFLAGS = $(AM_CFLAGS) -Ilibtac/include
-pam_tacplus_la_LDFLAGS = -module -avoid-version
+
+## note: on Mac OS X should have: -framework CommonCrypto (?)
+pam_tacplus_la_LDFLAGS = -module -avoid-version -lssl
+
 
 EXTRA_DIST = pam_tacplus.spec sample.pam
 
